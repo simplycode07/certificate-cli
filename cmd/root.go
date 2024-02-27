@@ -5,14 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	// "path/filepath"
-
 	"github.com/spf13/cobra"
 )
 
 var (
 	templatePath string
-	BlankCertificatePath string
+	blankCertificatePath string
 )
 
 var rootCmd = &cobra.Command{
@@ -26,8 +24,10 @@ var rootCmd = &cobra.Command{
 		}
 		
 		settings, err := os.ReadFile(templatePath)
+
 		if err != nil {
 			fmt.Println("could not read file")
+			os.Exit(1)
 		}else{
 			fmt.Println(settings)
 		}
@@ -40,19 +40,21 @@ func Execute() (string, string) {
 		os.Exit(1)
 	}
 
-	return templatePath, BlankCertificatePath
+	return templatePath, blankCertificatePath
 }
 
 func init() {
 	rootCmd.Flags().StringVarP(&templatePath, "template", "t", "", "path to template.json")
-	rootCmd.Flags().StringVarP(&BlankCertificatePath, "certificate", "c", "", "path to blank certificate")
+	rootCmd.Flags().StringVarP(&blankCertificatePath, "certificate", "c", "", "path to blank certificate")
 
 	err := rootCmd.MarkFlagRequired("template")
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	if err := rootCmd.MarkFlagRequired("certificate"); err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 }
