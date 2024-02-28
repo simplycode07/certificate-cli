@@ -1,10 +1,11 @@
 package image
 
 import (
-	"fmt"
+	// "fmt"
 )
 
-func GenerateImage(template interface{}, blankCertificatePath string) {
-	fmt.Println("this is image.go")
-	fmt.Println(template)
+func GenerateImage(template interface{}, blankCertificatePath string, name string) {
+	// fmt.Println(template)
+
+
 }
