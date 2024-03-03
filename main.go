@@ -37,8 +37,8 @@ func main() {
 
 	// read list of names from the csv file
 	nameBytes, err := os.Open(nameListPath)
-	// names, err := csv.NewReader(nameBytes).ReadAll()
-	_, err = csv.NewReader(nameBytes).ReadAll()
+	names, err := csv.NewReader(nameBytes).ReadAll()
+	// _, err = csv.NewReader(nameBytes).ReadAll()
 	defer nameBytes.Close()
 	if err != nil {
 		fmt.Println(err)
@@ -65,14 +65,15 @@ func main() {
 	}
 
 
-	generator.GenerateImage(template, certificateByte, parsedFont, "name", baseDir)
+	// generator.GenerateImage(template, certificateByte, parsedFont, "name", baseDir)
 
-	// fmt.Println("NAMES: ")
-	// for _, val := range names {
-	// 	for _, name := range val{
-	// 		// fmt.Printf("%s, ", name)
-	// 		generator.GenerateImage(template, certificateByte, blankCertificatePath, name)
-	// 	}
-	// }
+	generator.Initialize(template, certificateByte, parsedFont, baseDir)
+
+	fmt.Println("NAMES: ")
+	for _, val := range names {
+		for _, name := range val{
+			generator.GenerateImage(template, name)
+		}
+	}
 	fmt.Println()
 }

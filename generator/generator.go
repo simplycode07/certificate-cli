@@ -40,23 +40,51 @@ type Template struct {
 	} `json:"serial"`
 }
 
-func GenerateImage(template Template, blankCertificate io.Reader, parsedFont *truetype.Font, name string, baseDir string) {
-	fmt.Println("generating for", template.Event.Name)
+var (
+	certificateDecoded image.Image
+	fontface font.Face
+	baseDir string
+	err error
+	certificatesGeneratedDir string = "certificatesGenerated/"
+)
 
-	certificateDecoded, err := png.Decode(blankCertificate)
+func Initialize(template Template, blankCertificate io.Reader, parsedFont *truetype.Font, baseDirectory string) {
+	baseDir = baseDirectory
+	certificateDecoded, err = png.Decode(blankCertificate)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	fmt.Println("certificate decoded")
+
+	fontface = truetype.NewFace(parsedFont, &truetype.Options{
+			Size: float64(template.Title.Fontsize),
+		})
+	fmt.Println("new fontface created")
+
+	if _, err = os.Stat(baseDir + certificatesGeneratedDir); os.IsNotExist(err) {
+		err = os.Mkdir(baseDir + certificatesGeneratedDir, os.ModePerm)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
+	// if err = os.Mkdir(baseDir + certificatesGeneratedDir, os.ModePerm); err != nil || !os.IsNotExist(err){
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
+
+}
+
+func GenerateImage(template Template, name string) {
+	fmt.Println("generating for", name)
 
 	canvas := image.NewRGBA(certificateDecoded.Bounds())
 
 	// draw blankCertificate onto the canvas
 	draw.Draw(canvas, canvas.Rect, certificateDecoded, image.Point{0, 0}, draw.Src)
+	fmt.Println("canvas drawn")
 
-	fontface := truetype.NewFace(parsedFont, &truetype.Options{
-			Size: float64(template.Title.Fontsize),
-		})
 
 	// hinting := font.HintingNone
 	textDrawer := &font.Drawer{
@@ -64,15 +92,16 @@ func GenerateImage(template Template, blankCertificate io.Reader, parsedFont *tr
 		Src: image.Black,
 		Face: fontface,
 	}
-	
 	// textDrawer.Dot.X = fixed.Int26_6(canvas.Rect.Dx() * 26)
-	textDrawer.Dot.X = fixed.Int26_6((fixed.I(canvas.Rect.Dx()) - font.MeasureString(fontface, "testing...")) / 2 + fixed.I(template.Title.Offset_x))
-	textDrawer.Dot.Y = fixed.Int26_6((fixed.I(canvas.Rect.Dx()) - font.MeasureString(fontface, "testing...")) / 2 + fixed.I(template.Title.Offset_y))
-	textDrawer.DrawString("testing...")
+	x, y := getAlignment(template.Title.Align_x, template.Title.Align_y, canvas, name, fontface)
+	textDrawer.Dot.X = x + fixed.I(template.Title.Offset_x)
+	textDrawer.Dot.Y = y + fixed.I(template.Title.Offset_y)
+	fmt.Println("Drawing at:", x, y)
+	textDrawer.DrawString(name)
 	
 	// create file to save image to f"{baseDir}{name}.png" 
-	fmt.Println("saving to", baseDir + name + ".png")
-	outFile, err := os.Create(baseDir + name + ".png")
+	fmt.Println("saving to", baseDir + certificatesGeneratedDir + name + ".png")
+	outFile, err := os.Create(baseDir + certificatesGeneratedDir + name + ".png")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -85,4 +114,37 @@ func GenerateImage(template Template, blankCertificate io.Reader, parsedFont *tr
 	}
 
 	outFileWriter.Flush()
+}
+
+func getAlignment(Align_x string, Align_y string, canvas *image.RGBA, text string, fontface font.Face) (fixed.Int26_6, fixed.Int26_6) {
+	var (
+		x fixed.Int26_6
+		y fixed.Int26_6
+	)
+
+	switch Align_x {
+	case "left":
+		x = 0
+
+	case "right":
+		x = fixed.I(canvas.Rect.Dx()) - font.MeasureString(fontface, text)
+
+	case "center":
+		x = (fixed.I(canvas.Rect.Dx()) - font.MeasureString(fontface, text)) / 2
+	
+	}
+
+	switch Align_y {
+	case "top":
+		y = 0 + fontface.Metrics().Ascent
+
+	case "bottom":
+		y = fixed.I(canvas.Rect.Dy()) - fontface.Metrics().Descent
+
+	case "center":
+		// this is not exactly centered because of how fonts are drawn
+		y = (fixed.I(canvas.Rect.Dy())) / 2
+	}
+
+	return x, y
 }
