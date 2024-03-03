@@ -1,0 +1,24 @@
+{
+	"event": {
+		"name": "synergy",
+		"date": "27/02/24"
+	},
+
+	"title": {
+		"font": "Lora-Bold.ttf",
+		"fontsize":100,
+		"align_x":"center",
+		"align_y":"center",
+		"offset_x":0,
+		"offset_y":-50
+	},
+
+	"serial": {
+		"font": "Lora-Bold.ttf",
+		"fontsize":10,
+		"align_x":"center",
+		"align_y":"center",
+		"offset_x":0,
+		"offset_y":0
+	}
+}
