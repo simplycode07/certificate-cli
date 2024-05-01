@@ -69,11 +69,6 @@ func Initialize(template Template, blankCertificate io.Reader, parsedFont *truet
 			os.Exit(1)
 		}
 	}
-	// if err = os.Mkdir(baseDir + certificatesGeneratedDir, os.ModePerm); err != nil || !os.IsNotExist(err){
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
-
 }
 
 func GenerateImage(template Template, name string) {
@@ -92,6 +87,7 @@ func GenerateImage(template Template, name string) {
 		Src: image.Black,
 		Face: fontface,
 	}
+
 	// textDrawer.Dot.X = fixed.Int26_6(canvas.Rect.Dx() * 26)
 	x, y := getAlignment(template.Title.Align_x, template.Title.Align_y, canvas, name, fontface)
 	textDrawer.Dot.X = x + fixed.I(template.Title.Offset_x)
@@ -114,6 +110,7 @@ func GenerateImage(template Template, name string) {
 	}
 
 	outFileWriter.Flush()
+
 }
 
 func getAlignment(Align_x string, Align_y string, canvas *image.RGBA, text string, fontface font.Face) (fixed.Int26_6, fixed.Int26_6) {
