@@ -64,16 +64,16 @@ func main() {
 		os.Exit(1)
 	}
 
-
-	// generator.GenerateImage(template, certificateByte, parsedFont, "name", baseDir)
-
 	generator.Initialize(template, certificateByte, parsedFont, baseDir)
 
 	fmt.Println("NAMES: ")
-	for _, val := range names {
+	for index, val := range names {
 		for _, name := range val{
-			generator.GenerateImage(template, name)
+			generator.GenerateImage(template, name, index)
+			// fmt.Println("for name:", name)
+			// fmt.Println("serial generated: ", generator.GetSerial(template, index))
 		}
 	}
+
 	fmt.Println()
 }

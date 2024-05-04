@@ -1,7 +1,10 @@
 {
 	"event": {
-		"name": "synergy",
-		"date": "27/02/24"
+		"name": "SYN",
+		"date": "27/02/24",
+		"subname": "TXP",
+		"cert_type":"M",
+		"volunteering":false
 	},
 
 	"title": {
@@ -15,10 +18,10 @@
 
 	"serial": {
 		"font": "Lora-Bold.ttf",
-		"fontsize":10,
-		"align_x":"center",
-		"align_y":"center",
-		"offset_x":0,
-		"offset_y":0
+		"fontsize":30,
+		"align_x":"left",
+		"align_y":"top",
+		"offset_x":100,
+		"offset_y":100
 	}
 }
